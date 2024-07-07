@@ -7,47 +7,37 @@ Recognize live speech from the default audio device.
 # Author: David Huggins-Daines <dhdaines@gmail.com>
 
 from pocketsphinx import Endpointer, Decoder, set_loglevel
-import pyttsx3
+# import pyttsx3
 import subprocess
 import sys
-import os
-
-
 
 
 def main():
-    #pyttsx3 Setup
-    engine = pyttsx3.init()
+    # pyttsx3 Setup
+    # engine = pyttsx3.init()
 
     # List available voices
-    voices = engine.getProperty('voices')
+    # voices = engine.getProperty('voices')
 
     # print(f"ID: {voice.id} - Name: {voice.name}")
 
     # Set a specific voice
     # engine.setProperty('voice', voices[1].id)  # Choose a different index for different voices
 
-    engine.say("Hello, this is a test.")
-    
-    engine.say("Hello, this is a test.")
+    # engine.runAndWait()
 
-    engine.say("Hello, this is a test.")
-
-    engine.say("Hello, this is a test.")
-
-    engine.say("Hello, this is a test.")
-
-    engine.runAndWait()
-
-    #PocketSphinx Setup
+    # PocketSphinx Setup
     set_loglevel("INFO")
     ep = Endpointer()
     decoder = Decoder(
+        hmm="./models/acoustic/",
+        lm="./models/language/en-70k-0.2.lm",
+        dict="./models/dictionary/cmudict-en-us.dict",
+        loglevel="INFO",
         samprate=ep.sample_rate,
     )
     soxcmd = f"sox -q -r {ep.sample_rate} -c 1 -b 16 -e signed-integer -d -t raw -"
     sox = subprocess.Popen(soxcmd.split(), stdout=subprocess.PIPE)
-    speechend
     while True:
         frame = sox.stdout.read(ep.frame_bytes)
         prev_in_speech = ep.in_speech
@@ -64,9 +54,7 @@ def main():
                 print("Speech end at %.2f" % (ep.speech_end), file=sys.stderr)
                 decoder.end_utt()
                 print(decoder.hyp().hypstr)
-                speechend = ep.speech_end
 
-    
 
 try:
     main()
